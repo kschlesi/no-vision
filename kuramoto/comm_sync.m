@@ -1,4 +1,6 @@
 function alist = comm_sync(Aset,M,m)
+% computes average synchronization within
+% each community size ?
 
 M = M(:); m = m(:);
 [~,~,sims] = size(Aset);
