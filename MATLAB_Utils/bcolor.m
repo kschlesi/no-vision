@@ -13,6 +13,7 @@ function h = bcolor(inmat,varargin)
     end
     h = pcolor(varargin{:},padarray(inmat,[1 1],pad,'post'));
     set(h, 'EdgeColor', 'none');
+    %set(h, 'EdgeColor', [0.01,0.1,0.4]);
     
     % reset axis labels to coincide with centers of appropriate
     % columns/rows
