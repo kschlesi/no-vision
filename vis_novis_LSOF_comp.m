@@ -110,6 +110,7 @@ xlabel('subject ID (sorted)'); ylabel('variance in flexibility');
 [t3v,p3v] = ttest2(var(flex_v_OF(~~nodeix,:))-var(flex_rv_OF(~~nodeix,:)),...
                  var(flex_v_LS(~~nodeix,:))-var(flex_rv_LS(~~nodeix,:)));
 
+% visualize communities found in RV and V             
 x = 1;
 ncomms = 11;
 figure; subplot(2,2,1);

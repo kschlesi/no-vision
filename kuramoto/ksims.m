@@ -12,22 +12,26 @@ end
 
 % initialize simulation time
 tspan = 0:ts:endtime;
+nsteps = numel(tspan);
+
+% create time-dependent kappa_
+kappa_ = create_tdep_kappa(kappa_,nsteps);
 
 % create initial condition vectors
 w = randn(N,1).*sigma_;                % frequencies (normally distributed)
 
 % initialize state variables
 theta0 = unifrnd(0,2*pi,[N,1]);
-A = zeros(numel(tspan),N,N);
+A = zeros(nsteps,N,N);
 
 % solve discretised equation & keep results in theta
-theta = zeros(numel(tspan),numel(theta0));
+theta = zeros(nsteps,numel(theta0));
 theta(1,:) = theta0;
-for t=2:numel(tspan)
+for t=2:nsteps
   
   % evolve oscillators forward in time
   sinji = sin(repmat(theta(t-1,:),N,1)-repmat(theta(t-1,:)',1,N));
-  theta(t,:) = theta(t-1,:)' + ts.*w + kappa_.*sum(C.*sinji,2);      
+  theta(t,:) = theta(t-1,:)' + ts.*w + kappa_(t-1).*sum(C.*sinji,2);      
    
   % compute synchronization matrix
   cosij = cos(repmat(theta(t,:)',1,N)-repmat(theta(t,:),N,1));
@@ -35,5 +39,36 @@ for t=2:numel(tspan)
   A(t,:,:) = shiftdim(abs(cosij),-1);
   
 end  % end solve over tspan
+
+end
+
+function outKappa = create_tdep_kappa(inKappa,nsteps)
+% takes an input kappa_ (numeric scalar, vector, or nD matrix) and converts
+% it to an output of length (nsteps-1). this it does by truncating (if 
+% numel(kappa) > nsteps-1) or by expanding. example: if there are N
+% elements in kappa_, kappa_(1) covers the first Nth of steps, kappa_(2)
+% the 2nd Nth, ...., and kappa_(end) covers the last full Nth division of
+% steps PLUS the remaining steps.
+
+if isscalar(inKappa)
+    outKappa = repmat(inKappa,nsteps-1,1);
+else
+    inKappa = inKappa(:);
+    nK = numel(inKappa);
+    if nK >= nsteps-1
+        outKappa = inKappa(1:nsteps-1);
+    else
+        kdivs = floor((nsteps-1)/nK);
+        krem = mod(nsteps-1,nK);
+        outKappa = zeros(nsteps-1,1);
+        for i=1:nK
+            outKappa((i-1)*kdivs+1:i*kdivs) = inKappa(i);
+        end
+        if ~~krem  % if remainder
+            outKappa(nK*kdivs+1:end) = inKappa(end);
+        end
+    end
+end
+assert(numel(outKappa) == nsteps-1);
 
 end

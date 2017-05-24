@@ -30,7 +30,7 @@ end
 
 % create nxn count of partitions in which nodepairs are in the same module
     for ii = 1:n          
-        for jj = ii:n;
+        for jj = ii:n
             
             % actual version
             P(ii,jj) = sum(C(:,ii)==C(:,jj));

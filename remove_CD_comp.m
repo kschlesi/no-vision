@@ -68,10 +68,11 @@ for s=1:sims
                      :,:,s),1));
     end
     C = genlouvainREPs(A,p,gamma_,omega_);
-    Ccons = zeros(p,n,T);
+    Ccons = zeros(p,n*T);
     for i=1:T
         Ccons(:,:,i) = consensus_comm_GL2(C(:,:,i));
     end
+    %Ccons = reshape(consensus_comm_GL2(Ccons),[p,n,T]);
     F(:,:,:,s) = C;
     Fcons(:,:,:,s) = Ccons;
   end
@@ -116,30 +117,52 @@ if makePlot
   b100 = bluemap(100);         
   
   % check of consensus
-  for s=1:5
+  for s=1:3
     figure;
     if doFullRun
-      ncomms = numel(unique(F(:,:,:,1)));
-    else
-      ncomms = numel(unique(R(:,:,:,1)));
+      ncommsF = numel(unique(F(:,:,:,1)));
     end
+      ncommsR = numel(unique(R(:,:,:,1)));
         for i=1:T
           if doFullRun  
             subplot(T,2,i*2-1);
             bcolor(F(:,:,i,s)'); 
-            colormap(lines(ncomms)); caxis([1 ncomms]); colorbar;
+            colormap(lines(ncommsF)); caxis([1 ncommsF]); colorbar;
             subplot(T,2,i*2);
             bcolor(Fcons(:,:,i,s)'); 
-            colormap(lines(ncomms)); caxis([1 ncomms]); colorbar;
+            colormap(lines(ncommsF)); caxis([1 ncommsF]); colorbar;
           else
             subplot(T,2,i*2-1);
             bcolor(R(:,:,i,s)'); 
-            colormap(lines(ncomms)); caxis([1 ncomms]); colorbar;
+            colormap(lines(ncommsR)); caxis([1 ncommsR]); colorbar;
             subplot(T,2,i*2);
             bcolor(Rcons(:,:,i,s)'); 
-            colormap(lines(ncomms)); caxis([1 ncomms]); colorbar;  
+            colormap(lines(ncommsR)); caxis([1 ncommsR]); colorbar;  
           end
         end
+  end
+  
+  % look over time windows... for consensus communities
+  for s=1:5
+      % create nx(p*T) matrix
+    if doFullRun  
+      pFmat = zeros(n,p*T);
+    end
+      pRmat = zeros(nR,p*T);
+      for t=1:T
+        if doFullRun  
+          pFmat(:,(t-1)*p+1:t*p) = Fcons(:,:,t,s)';
+        end
+          pRmat(:,(t-1)*p+1:t*p) = Rcons(:,:,t,s)';
+      end
+    if doFullRun  
+      ncommsF = numel(unique(pFmat));
+      figure; bcolor(pFmat); 
+              colormap(lines(ncommsF)); caxis([1 ncommsF]); colorbar;
+    end
+      ncommsR = numel(unique(pRmat));
+      figure; bcolor(pRmat); 
+              colormap(lines(ncommsR)); caxis([1 ncommsR]); colorbar;        
   end
   
   % figure for full network
