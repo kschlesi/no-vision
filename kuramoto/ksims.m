@@ -14,8 +14,13 @@ end
 tspan = 0:ts:endtime;
 nsteps = numel(tspan);
 
-% create time-dependent kappa_
-kappa_ = create_tdep_kappa(kappa_,nsteps);
+% if kappa_ is kappa_ij (i.e. size(C)), use it as-is.
+if all([N,N1]==size(kappa_))
+    tDepKappa = false;
+else % else, create time-dependent kappa_
+    kappa_ = create_tdep_kappa(kappa_,nsteps);
+    tDepKappa = true;
+end
 
 % create initial condition vectors
 w = randn(N,1).*sigma_;                % frequencies (normally distributed)
@@ -31,7 +36,11 @@ for t=2:nsteps
   
   % evolve oscillators forward in time
   sinji = sin(repmat(theta(t-1,:),N,1)-repmat(theta(t-1,:)',1,N));
-  theta(t,:) = theta(t-1,:)' + ts.*w + kappa_(t-1).*sum(C.*sinji,2);      
+  if tDepKappa
+      theta(t,:) = theta(t-1,:)' + ts.*w + kappa_(t-1).*sum(C.*sinji,2);      
+  else
+      theta(t,:) = theta(t-1,:)' + ts.*w + sum(kappa_.*C.*sinji,2);    
+  end
    
   % compute synchronization matrix
   cosij = cos(repmat(theta(t,:)',1,N)-repmat(theta(t,:),N,1));
