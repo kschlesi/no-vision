@@ -26,37 +26,38 @@ pbase = pout;
 % CD parameters
 gamma_ = 1.05;
 omega_ = 0.5;
+saveString = 'nrun_g105o05';
 
 Cgenfun = @()modcoupler(N,M,m,pbase,pin,pout,'EnsureConnect');
 Cdeepfun = @()modcoupler(N,M,m,0,1,0);
 
 % try full runs
 toRemove = [];
-[Rassg105o05,~,~,~,Rg105o05,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
+[Rass,~,~,~,Rg,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
             'gamma_',gamma_,'omega_',omega_,'makePlot',true,'doFullRun',false,...
             'kappa_',kappa_);
 p = 100; nR = N-numel(toRemove);
-save('run_g105o05.mat','endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
-                      'Rassg105o05','Rg105o05','pbase','pin','pout','sims','T','kappa_','Cens');
+save(['Results/' saveString '.mat'],'endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
+                      'Rass','Rg','pbase','pin','pout','sims','T','kappa_','Cens');
 
 %%
 % try removing 20 comms...
 toRemove = 1:60;
-[Rassg105o05,~,~,~,Rg105o05,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
+[Rass,~,~,~,Rg,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
             'gamma_',gamma_,'omega_',omega_,'makePlot',true,'doFullRun',false,...
             'kappa_',kappa_);
 p = 100; nR = N-numel(toRemove);
-save('run_g105o05_rem20.mat','endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
-                      'Rassg105o05','Rg105o05','pbase','pin','pout','sims','T','kappa_','Cens');
+save(['Results/' saveString '_rem20.mat'],'endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
+                      'Rass','Rg','pbase','pin','pout','sims','T','kappa_','Cens');
 
 % now try removing 8 comms
 toRemove = 61:100;
-[Rassg105o05,~,~,~,Rg105o05,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
+[Rass,~,~,~,Rg,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
             'gamma_',gamma_,'omega_',omega_,'makePlot',true,'doFullRun',false,...
             'kappa_',kappa_);
 p = 100; nR = N-numel(toRemove);
-save('run_g105o05_rem8.mat','endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
-                      'Rassg105o05','Rg105o05','pbase','pin','pout','sims','T','kappa_','Cens');
+save(['Results/' saveString '_rem8.mat'],'endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
+                      'Rass','Rg','pbase','pin','pout','sims','T','kappa_','Cens');
 
 %% calculate Truepos and Falsepos
 [tPos,fPos] = calculate_single_acc(R,Cens);
@@ -79,7 +80,7 @@ figure; plot(mean(fPosRates,2),mean(tPosRates,2),'-k'); hold on;
 
 %% QaD plot...
 doFullRun = 0;
-Rcons = Rg105o05;
+Rcons = Rg;
 nR = N - numel(toRemove);
 p = 100;
 

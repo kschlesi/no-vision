@@ -67,12 +67,12 @@ for s=1:sims
         A{t} = squeeze(mean(A_ens(1+transient+(t-1)*tLength:t*tLength+transient,...
                      :,:,s),1));
     end
-    C = genlouvainREPs(A,p,gamma_,omega_);
+    C = genlouvainREPs(A,p,gamma_,omega_);  % C is pxnxT
     Ccons = zeros(p,n*T);
-    for i=1:T
-        Ccons(:,:,i) = consensus_comm_GL2(C(:,:,i));
+    for t=1:T
+        Ccons(:,(t-1)*n+1:t*n) = C(:,:,t);
     end
-    %Ccons = reshape(consensus_comm_GL2(Ccons),[p,n,T]);
+    Ccons = reshape(consensus_comm_GL2(Ccons),[p,n,T]);
     F(:,:,:,s) = C;
     Fcons(:,:,:,s) = Ccons;
   end
