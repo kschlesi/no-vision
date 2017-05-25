@@ -19,14 +19,14 @@ kappa_ = 0.2;
 N = 100;
 M = [20;8];   % unique community sizes present 
 m = [3;5];    % number of communities of each size
-pin = [0.9;0.5]; % coupling probability for in-community nodes
+pin = [0.9;0.7]; % coupling probability for in-community nodes
 pout = 0.01;    % coupling probability for out-of-community nodes
 pbase = pout;
 
 % CD parameters
 gamma_ = 1;
 omega_ = 1;
-saveString = 'nrun_g1o1';
+saveString = 's8run_g1o1';
 
 Cgenfun = @()modcoupler(N,M,m,pbase,pin,pout,'EnsureConnect');
 Cdeepfun = @()modcoupler(N,M,m,0,1,0);
@@ -40,7 +40,7 @@ p = 100; nR = N-numel(toRemove);
 save(['Results/' saveString '.mat'],'endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
                       'Rass','Rg','pbase','pin','pout','sims','T','kappa_','Cens');
 
-%
+%%
 % try removing 20 comms...
 toRemove = 1:60;
 [Rass,~,~,~,Rg,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
