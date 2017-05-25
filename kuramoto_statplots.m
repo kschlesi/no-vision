@@ -1,102 +1,28 @@
-%% load things for plots: gamma=1, omega=0.5
+%% load things for plots
 clear all;
 
-load('run_g1o05_rem20.mat');
-R20 = Rg1o05;
-Rass20 = Rassg1o05;
+paramString = 'g1o05';
+
+load(['Results/nrun_' paramString '_rem20.mat']);
+R20 = Rg;
+Rass20 = Rass;
 Cens20 = Cens;
 nR20 = nR;
 toRem20 = toRemove;
 
-load('run_g1o05_rem8.mat');
-R8 = Rg1o05;
-Rass8 = Rassg1o05;
+load(['Results/nrun_' paramString '_rem8.mat']);
+R8 = Rg;
+Rass8 = Rass;
 Cens8 = Cens;
 nR8 = nR;
 toRem8 = toRemove;
 
-load('run_g1o05.mat');
-R = Rg1o05;
-Rass = Rassg1o05;
+load(['Results/nrun_' paramString '.mat']);
+R = Rg;
 
-open('g1o05_Fass_t8_20-3_8-5.fig');
-open('g1o05_Fass_t8_20-3_8-5_rem8.fig');
-open('g1o05_Fass_t8_20-3_8-5_rem20.fig');
-
-%% load things for plots: gamma=2, omega=0.5
-clear all;
-
-load('run_g2o05_rem20.mat');
-R20 = Rg2o05;
-Rass20 = Rassg2o05;
-Cens20 = Cens;
-nR20 = nR;
-toRem20 = toRemove;
-
-load('run_g2o05_rem8.mat');
-R8 = Rg2o05;
-Rass8 = Rassg2o05;
-Cens8 = Cens;
-nR8 = nR;
-toRem8 = toRemove;
-
-load('run_g2o05.mat');
-R = Rg2o05;
-Rass = Rassg2o05;
-
-open('g2o05_Fass_t8_20-3_8-5.fig');
-open('g2o05_Fass_t8_20-3_8-5_rem8.fig');
-open('g2o05_Fass_t8_20-3_8-5_rem20.fig');
-
-%% load things for plots: gamma=1, omega=0.05
-clear all;
-
-load('run_g1o005_rem20.mat');
-R20 = Rg1o005;
-Rass20 = Rassg1o005;
-%Cens20 = Cens;
-nR20 = nR;
-toRem20 = toRemove;
-
-load('run_g1o005_rem8.mat');
-R8 = Rg1o005;
-Rass8 = Rassg1o005;
-%Cens8 = Cens;
-nR8 = nR;
-toRem8 = toRemove;
-
-load('run_g1o005.mat');
-R = Rg1o005;
-Rass = Rassg1o005;
-
-open('g1o005_Fass_t8_20-3_8-5.fig');
-open('g1o005_Fass_t8_20-3_8-5_rem8.fig');
-open('g1o005_Fass_t8_20-3_8-5_rem20.fig');
-
-%% load things for plots: gamma=1, omega=0.1
-clear all;
-
-load('run_g1o01_rem20.mat');
-R20 = Rg1o01;
-Rass20 = Rassg1o01;
-%Cens20 = Cens;
-nR20 = nR;
-toRem20 = toRemove;
-
-load('run_g1o01_rem8.mat');
-R8 = Rg1o01;
-Rass8 = Rassg1o01;
-%Cens8 = Cens;
-nR8 = nR;
-toRem8 = toRemove;
-
-load('run_g1o01.mat');
-R = Rg1o01;
-Rass = Rassg1o01;
-
-open('g1o01_Fass_t8_20-3_8-5.fig');
-open('g1o01_Fass_t8_20-3_8-5_rem8.fig');
-open('g1o01_Fass_t8_20-3_8-5_rem20.fig');
+%open('g1o05_Fass_t8_20-3_8-5.fig');
+%open('g1o05_Fass_t8_20-3_8-5_rem8.fig');
+%open('g1o05_Fass_t8_20-3_8-5_rem20.fig');
 
 %% calculate Truepos and Falsepos
 [tPos,fPos] = calculate_single_acc(R,Cens);
