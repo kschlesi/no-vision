@@ -1,23 +1,23 @@
 %% load things for plots
 clear all;
 
-paramString = 'g1o05';
+paramString = 's8run_g1o1';
 
-load(['Results/nrun_' paramString '_rem20.mat']);
+load(['Results/' paramString '_rem20.mat']);
 R20 = Rg;
 Rass20 = Rass;
 Cens20 = Cens;
 nR20 = nR;
 toRem20 = toRemove;
 
-load(['Results/nrun_' paramString '_rem8.mat']);
+load(['Results/' paramString '_rem8.mat']);
 R8 = Rg;
 Rass8 = Rass;
 Cens8 = Cens;
 nR8 = nR;
 toRem8 = toRemove;
 
-load(['Results/nrun_' paramString '.mat']);
+load(['Results/' paramString '.mat']);
 R = Rg;
 
 %open('g1o05_Fass_t8_20-3_8-5.fig');

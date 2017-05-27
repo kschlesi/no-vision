@@ -117,7 +117,7 @@ if makePlot
   b100 = bluemap(100);         
   
   % check of consensus
-  for s=1:3
+  for s=1:min(sims,3)
     figure;
     if doFullRun
       ncommsF = numel(unique(F(:,:,:,1)));
@@ -143,7 +143,7 @@ if makePlot
   end
   
   % look over time windows... for consensus communities
-  for s=1:5
+  for s=1:min(sims,5)
       % create nx(p*T) matrix
     if doFullRun  
       pFmat = zeros(n,p*T);

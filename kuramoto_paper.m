@@ -9,25 +9,25 @@ addpath(genpath('Region_Info/'));
 
 %% Try with multiple time windows. First.
 
-sims = 10;
+sims = 1;
 endtime = 40;
 T = 8;
 %kappa_ = [0.2 0.2 0.3 0.3 0.5 0.5 0.2 0.2]; % change over time
-%kappa_ = 0.2;
-kappa_ = [0.2;0.5];
+kappa_ = 0.2;
+%kappa_ = [0.2;0.5];
 
 % structural parameters
 N = 100;
 M = [20;8];   % unique community sizes present 
 m = [3;5];    % number of communities of each size
-pin = [0.9;0.7]; % coupling probability for in-community nodes
+pin = [0.9;0.9]; % coupling probability for in-community nodes
 pout = 0.01;    % coupling probability for out-of-community nodes
 pbase = pout;
 
 % CD parameters
 gamma_ = 1;
 omega_ = 1;
-saveString = 's8run_g1o1k2';
+saveString = 'ss8run_g1o1';
 
 Cgenfun = @()modcoupler(N,M,m,pbase,pin,pout,'EnsureConnect');
 Cdeepfun = @()modcoupler(N,M,m,0,1,0);
