@@ -84,10 +84,11 @@ for s=1:sims
                    removeval(1:n,toRemove),removeval(1:n,toRemove),s),1));
   end
   C_r = genlouvainREPs(A,p,gamma_,omega_);
-  Ccons_r = zeros(p,nR,T);
-  for i=1:T
-      Ccons_r(:,:,i) = consensus_comm_GL2(C_r(:,:,i));
+  Ccons_r = zeros(p,nR*T);
+  for t=1:T
+      Ccons_r(:,(t-1)*n+1:t*n) = C_r(:,:,t);
   end
+  Ccons_r = reshape(consensus_comm_GL2(Ccons_r),[p,nR,T]);
   R(:,:,:,s) = C_r;
   Rcons(:,:,:,s) = Ccons_r;
 end

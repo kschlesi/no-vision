@@ -9,7 +9,7 @@ addpath(genpath('Region_Info/'));
 
 %% Try with multiple time windows. First.
 
-sims = 1;
+sims = 8;
 endtime = 40;
 T = 8;
 %kappa_ = [0.2 0.2 0.3 0.3 0.5 0.5 0.2 0.2]; % change over time
@@ -26,8 +26,8 @@ pbase = pout;
 
 % CD parameters
 gamma_ = 1;
-omega_ = 1;
-saveString = 'ss8run_g1o1';
+omega_ = 0.5;
+saveString = 'ss8run_g1o05';
 
 Cgenfun = @()modcoupler(N,M,m,pbase,pin,pout,'EnsureConnect');
 Cdeepfun = @()modcoupler(N,M,m,0,1,0);

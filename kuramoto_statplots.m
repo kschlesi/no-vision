@@ -1,7 +1,7 @@
 %% load things for plots
 clear all;
 
-paramString = 's8run_g1o1';
+paramString = 'ss8run_g1o1';
 
 load(['Results/' paramString '_rem20.mat']);
 R20 = Rg;
