@@ -6,28 +6,27 @@ addpath(genpath('Kuramoto/'));
 addpath(genpath('CD_Utils/'));
 addpath(genpath('MATLAB_Utils/'));
 addpath(genpath('Region_Info/'));
+addpath(genpath('Analysis_Utils/'));
 
-%% Try with multiple time windows. First.
+%% Try with single sizes. First first.
 
-sims = 8;
+sims = 10;
 endtime = 40;
 T = 8;
-%kappa_ = [0.2 0.2 0.3 0.3 0.5 0.5 0.2 0.2]; % change over time
 kappa_ = 0.2;
-%kappa_ = [0.2;0.5];
 
 % structural parameters
-N = 100;
-M = [20;8];   % unique community sizes present 
-m = [3;5];    % number of communities of each size
-pin = [0.9;0.9]; % coupling probability for in-community nodes
-pout = 0.01;    % coupling probability for out-of-community nodes
+N = 60;
+M = 20;
+m = 3;
+pin = 0.9;
+pout = 0.01;
 pbase = pout;
 
 % CD parameters
-gamma_ = 1;
-omega_ = 0.5;
-saveString = 'ss8run_g1o05';
+gamma_ = 0.99;
+omega_ = 1;
+saveString = 'arun20_g09o1';
 
 Cgenfun = @()modcoupler(N,M,m,pbase,pin,pout,'EnsureConnect');
 Cdeepfun = @()modcoupler(N,M,m,0,1,0);
@@ -46,8 +45,49 @@ p = 100; nR = N-numel(toRemove);
 save(['Results/' saveString '.mat'],'endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
                       'Rass','Rg','pbase','pin','pout','sims','T','kappa_','Cens');
 
-%%
-% try removing 20 comms...
+
+
+%% Try with multiple time windows. First.
+
+sims = 10;
+endtime = 40;
+T = 8;
+%kappa_ = [0.2 0.2 0.3 0.3 0.5 0.5 0.2 0.2]; % change over time
+kappa_ = 0.2;
+%kappa_ = [0.2;0.5];
+
+% structural parameters
+N = 100;
+M = [20;8];   % unique community sizes present 
+m = [3;5];    % number of communities of each size
+pin = [0.9;0.7]; % coupling probability for in-community nodes
+pout = 0.01;    % coupling probability for out-of-community nodes
+pbase = pout;
+
+% CD parameters
+gamma_ = 1;
+omega_ = 1;
+saveString = 's8nrun_g1o1';
+
+Cgenfun = @()modcoupler(N,M,m,pbase,pin,pout,'EnsureConnect');
+Cdeepfun = @()modcoupler(N,M,m,0,1,0);
+
+% kappa matrix
+if all(size(kappa_)==size(M))
+    kappa_ = make_kappa_mat(kappa_,N,M,m);
+end
+
+% try full runs
+toRemove = [];
+[Rass,~,~,~,Rg,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
+            'gamma_',gamma_,'omega_',omega_,'makePlot',true,'doFullRun',false,...
+            'kappa_',kappa_);
+p = 100; nR = N-numel(toRemove);
+save(['Results/' saveString '.mat'],'endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
+                      'Rass','Rg','pbase','pin','pout','sims','T','kappa_','Cens');
+
+
+%% try removing 20 comms...
 toRemove = 1:60;
 [Rass,~,~,~,Rg,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
             'gamma_',gamma_,'omega_',omega_,'makePlot',true,'doFullRun',false,...
@@ -65,6 +105,23 @@ p = 100; nR = N-numel(toRemove);
 save(['Results/' saveString '_rem8.mat'],'endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
                       'Rass','Rg','pbase','pin','pout','sims','T','kappa_','Cens');
 
+%% try removing ONE and TWO 20 comms...
+toRemove = 1:20;
+[Rass,~,~,~,Rg,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
+            'gamma_',gamma_,'omega_',omega_,'makePlot',true,'doFullRun',false,...
+            'kappa_',kappa_);
+p = 100; nR = N-numel(toRemove);
+save(['Results/' saveString '_rem20_1.mat'],'endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
+                      'Rass','Rg','pbase','pin','pout','sims','T','kappa_','Cens');
+                  
+toRemove = 1:40;
+[Rass,~,~,~,Rg,~,~,Cens] = remove_CD_comp(Cgenfun,toRemove,sims,'endtime',endtime,'T',T,...
+            'gamma_',gamma_,'omega_',omega_,'makePlot',true,'doFullRun',false,...
+            'kappa_',kappa_);
+p = 100; nR = N-numel(toRemove);
+save(['Results/' saveString '_rem20_2.mat'],'endtime','gamma_','omega_','m','M','N','p','nR','toRemove',...
+                      'Rass','Rg','pbase','pin','pout','sims','T','kappa_','Cens');                  
+                  
 %% calculate Truepos and Falsepos
 [tPos,fPos] = calculate_single_acc(R,Cens);
 
