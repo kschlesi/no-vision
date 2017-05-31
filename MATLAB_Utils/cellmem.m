@@ -10,7 +10,7 @@ for a=1:numel(A)
         % if either cell (A or B) CONTAINS a char, use strcmp;
         % else use all(equals)
         if ischar(A{a}) || ischar(B{b})
-            xinb(b) = strcmp(A{a},B{b});
+            xinb(b) = all(strcmp(A{a},B{b})) && numel(A{a})==numel(B{b});
         else
             try AeqB = A{a}==B{b};
             catch oops
