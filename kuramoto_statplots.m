@@ -113,7 +113,8 @@ strList = {'arun20_g1o1',...
            's8nrun_g1o1_rem20',...
            };
 plotList = {'tpfp',...
-            'PR'};
+            'PR',...
+            };
 
 % plot setup
 figNos = zeros(size(plotList));
@@ -132,8 +133,7 @@ for i = 1:numel(strList)
     disp('...tpfp');    
     % create tpos/fpos plot for all selected runs
       figure(figNos(strcmp(plotList,'tpfp'))); hold on;
-        [tPos,fPos] = calculate_single_acc(Rg,Cens(rix,rix,:));
-        scatter(mean(fPos),mean(tPos),'o','MarkerFaceColor',next_color);
+        tpfp_figure(Rg,Cens(rix,rix,:),'ExtFigureCmd','DataOnly');
       hold off;
     end
     
@@ -141,10 +141,7 @@ for i = 1:numel(strList)
     disp('...ROC');
     % create ROC curve for all selected runs
       figure(figNos(strcmp(plotList,'ROC'))); hold on;
-        Cdeepfun = @()modcoupler(N,M,m,0,1,0);
-        Cdeep = Cdeepfun()+eye(N);
-        [tPosRates,fPosRates] = calculate_thresh_acc(Rass,Cdeep(rix,rix,:),sims);
-        plot(mean(fPosRates,2),mean(tPosRates,2),'-o','MarkerFaceColor',next_color);
+        ROC_figure(Rass,N,M,m,toRemove,sims,'ExtFigureCmd','DataOnly');
       hold off;
     end
     
@@ -152,10 +149,7 @@ for i = 1:numel(strList)
     disp('...PR');
     % create PR curve for all selected runs
       figure(figNos(strcmp(plotList,'PR'))); hold on;
-        Cdeepfun = @()modcoupler(N,M,m,0,1,0);
-        Cdeep = Cdeepfun()+eye(N);
-        [recall,~,~,~,precision] = calculate_thresh_acc(Rass,Cdeep(rix,rix,:),sims);
-        plot(mean(recall,2),mean(precision,2),'-o','MarkerFaceColor',next_color);
+        prec_rec_figure(Rass,N,M,m,toRemove,sims,'ExtFigureCmd','DataOnly');
       hold off;
     end
 end
@@ -171,30 +165,21 @@ for i=1:numel(plotList)
     
     if any(ismemvar(plotList,'tpfp'))
       figure(figNos(strcmp(plotList,'tpfp'))); hold on;
-        xlabel('false positive rate');
-        ylabel('true positive rate');
-        l = legend(legList,'location','southeast');
-        title('CD performance by run');
+        tpfp_figure([],[],'ExtFigureCmd','AccOnly','title','legend',legList);
       hold off;
     end
     
     if any(ismemvar(plotList,'ROC'))
       figure(figNos(strcmp(plotList,'ROC'))); hold on;
-        xlabel('false positive rate');
-        ylabel('true positive rate');
-        axis([-0.05 1 0 1.05]);
-        l = legend(legList,'location','southeast');
-        title('ROC');
+        ROC_figure([],[],[],[],[],[],...
+                   'ExtFigureCmd','AccOnly','title','legend',legList);
       hold off;  
     end
     
     if any(ismemvar(plotList,'PR'))
       figure(figNos(strcmp(plotList,'PR'))); hold on;
-        xlabel('recall (# true pos / all true)');
-        ylabel('precision (# true pos / all pos)');
-        axis([0 1.05 0 1.05]);
-        l = legend(legList,'location','southwest');
-        title('precision-recall curves');
+        prec_rec_figure([],[],[],[],[],[],...
+                   'ExtFigureCmd','AccOnly','title','legend',legList);
       hold off;  
     end
     
@@ -230,12 +215,111 @@ end
 
 %% create sysintro plot for some runs
 
-runList = {'arun20_g1o5',...
-           'aruns8_g1o1',...
-           's8nrun_g1o1'
-           };
+%runList = {'arun20_g1o5',...
+%           'aruns8_g1o1',...
+%          's8nrun_g1o1'
+%           };
+runList = {'s8nrun_g1o1',...         % full multi-resolution network
+           's8nrun_g1o1_rem20_1',...    %  remove 1 20
+           's8nrun_g1o1_rem20_2',...    %  remove 2 20s
+           's8nrun_g1o1_rem20',...      %  remove all 20s
+           };       
 for i=1:numel(runList)       
     paramString = char(runList{i});
     load(['Results/' paramString '.mat']);
-    sys_intro_figure(Cens,Rass,'title',paramString);
+    
+    Cens_mask = mask_remove(Cens,toRemove);
+    Rass_addback = addback_remove(addback_remove(Rass,N,toRemove,1),N,toRemove,2);
+    
+    sys_intro_figure(Cens_mask,Rass_addback,'title',paramString);
 end
+
+%% plots for all individual runs
+
+strList = {'s8nrun_g1o1',...         % full multi-resolution network
+           's8nrun_g1o1_rem20_1',...    %  remove 1 20
+           's8nrun_g1o1_rem20_2',...    %  remove 2 20s
+           's8nrun_g1o1_rem20',...      %  remove all 20s
+           };
+plotList = {'tpfp',...
+            'PR',...
+            };
+
+% plot setup
+figNos = zeros(size(plotList));
+for i=1:numel(plotList)
+    figNos(i) = next_fig;
+    figure(figNos(i)); hold on; hold off;
+end
+        
+for i = 1:numel(strList)
+    paramString = char(strList{i});
+    disp(['Plotting ' paramString]);
+    load(['Results/' paramString '.mat']);
+    rix = removeval(1:N,toRemove);
+    
+    if any(ismemvar(plotList,'tpfp'))
+    disp('...tpfp');    
+    % create tpos/fpos plot for all selected runs
+      figure(figNos(strcmp(plotList,'tpfp'))); hold on;
+        tpfp_figure(Rg,Cens(rix,rix,:),'ExtFigureCmd','DataOnly');
+        tpfp_figure(Rg(:,end-40+1:end,:,:),...
+                    Cens(end-40+1:end,end-40+1:end,:),...
+                    'ExtFigureCmd','DataOnly','xplot');
+      hold off;
+    end
+    
+    if any(ismemvar(plotList,'ROC'))
+    disp('...ROC');
+    % create ROC curve for all selected runs
+      figure(figNos(strcmp(plotList,'ROC'))); hold on;
+        ROC_figure(Rass,N,M,m,toRemove,sims,'ExtFigureCmd','DataOnly');
+        ROC_figure(Rass(end-40+1:end,end-40+1:end),...
+                   N,M,m,1:60,sims,'ExtFigureCmd','DataOnly',':plot');
+      hold off;
+    end
+    
+    if any(ismemvar(plotList,'PR'))
+    disp('...PR');
+    % create PR curve for all selected runs
+      figure(figNos(strcmp(plotList,'PR'))); hold on;
+        prec_rec_figure(Rass,N,M,m,toRemove,sims,'ExtFigureCmd','DataOnly');
+        prec_rec_figure(Rass(end-40+1:end,end-40+1:end),...
+                        N,M,m,1:60,sims,'ExtFigureCmd','DataOnly',':plot');
+      hold off;
+    end
+end
+
+% make legend list
+%legList = cellfun(@(x)insertBefore(x,'_','\'),strList,'UniformOutput',false);
+legList = {'full multi-res network','8-node comms in full ntwk',...
+           'one 20-node comm removed','8-node comms with one 20-node comm removed',...
+           'two 20-node comms removed','8-node comms with two 20-node comms removed',...
+           'all 20-node comms removed'
+           };
+
+% add plot details
+for i=1:numel(plotList)
+    
+    if any(ismemvar(plotList,'tpfp'))
+      figure(figNos(strcmp(plotList,'tpfp'))); hold on;
+        tpfp_figure([],[],'ExtFigureCmd','AccOnly','title','legend',legList);
+      hold off;
+    end
+    
+    if any(ismemvar(plotList,'ROC'))
+      figure(figNos(strcmp(plotList,'ROC'))); hold on;
+        ROC_figure([],[],[],[],[],[],...
+                   'ExtFigureCmd','AccOnly','title','legend',legList);
+      hold off;  
+    end
+    
+    if any(ismemvar(plotList,'PR'))
+      figure(figNos(strcmp(plotList,'PR'))); hold on;
+        prec_rec_figure([],[],[],[],[],[],...
+                   'ExtFigureCmd','AccOnly','title','legend',legList);
+      hold off;  
+    end
+    
+end
+        
