@@ -23,6 +23,8 @@ function [Rassoc,Fassoc,R,F,Rcons,Fcons,A_ens,C_ens] = ...
 %         transient: (optional) number initial ts to ignore (default = 0)
 %         makePlot : (optional) bool, true makes figs (default = false)
 %         doFullRun: (optional) bool, true runs on full network (default = true)
+%         inputDyn : (optional) bool, true uses input {A_ens, C_ens} (default = false)
+%         avgDyn   : (optional) bool, true averages A_ens over sims before CD (default = false)
 
 % assign varargs
 kappa_ = varargAssign('kappa_',0.2,varargin{:});
@@ -37,15 +39,33 @@ transient = varargAssign('transient',0,varargin{:});
 tLength = varargAssign('tLength',floor((numel(0:ts:endtime)-transient)/T),varargin{:});
 makePlot = varargAssign('makePlot',false,varargin{:});
 doFullRun = varargAssign('doFullRun',true,varargin{:});
+inputDyn = varargAssign('inputDyn',false,varargin{:});
+avgDyn = varargAssign('avgDyn',false,varargin{:});
 
 % if tLength was specified but T not specified, divide into equal windows
 if varargAssign('tLength',[],varargin{:}) && ~varargAssign('T',[],varargin{:})
     T = floor((numel(0:ts:endtime)-transient)/tLength);
 end
 
-% run kuramoto sims
-[~,A_ens,C_ens] = ksims_ens(sims,genFun,kappa_,sigma_,ts,endtime);
+% run kuramoto sims or get input dynamics
+if ~iscell(inputDyn) && inputDyn==false
+    [~,A_ens,C_ens] = ksims_ens(sims,genFun,kappa_,sigma_,ts,endtime);
+else    
+    try 
+        A_ens = inputDyn{1};
+        C_ens = inputDyn{2};
+    catch
+        error('InputDyn must be the 2-element cell array {A_ens,C_ens}');
+    end
+end
 n = size(A_ens,2);
+
+% perform averages IF DESIRED
+if avgDyn
+    A_ens = mean(A_ens,4);
+    C_ens = mean(C_ens,3);
+    sims = 1;
+end
 
 % initialize vars
 nR = n-numel(toRemove);

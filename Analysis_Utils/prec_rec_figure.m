@@ -13,12 +13,8 @@ function [] = prec_rec_figure(Rass,N,M,m,toRemove,sims,varargin)
       Cdeep = Cdeepfun()+eye(N);
       rix = removeval(1:N,toRemove);
       [recall,~,~,~,precision] = calculate_thresh_acc(Rass,Cdeep(rix,rix,:),sims);
-      if varargCheck(':plot',varargin{:})
-        plot(mean(recall,2),mean(precision,2),':o','Color',last_color,...
-                                              'MarkerFaceColor',last_color);  
-      else
-        plot(mean(recall,2),mean(precision,2),'-o','MarkerFaceColor',next_color);
-      end
+      plotargs = varargAssign('plotargs',{'-o'},varargin{:});
+      plot(mean(recall,2),mean(precision,2),plotargs{:});
   end
   
   if accessorize

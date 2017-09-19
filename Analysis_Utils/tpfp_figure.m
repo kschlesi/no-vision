@@ -1,20 +1,25 @@
-function [] = tpfp_figure(Rg,Cens,varargin)
+function [tps,fps] = tpfp_figure(Rg,Cens,varargin)
 % creates true pos / false pos figure and accessories from input data
 
   if ~varargCheck('ExtFigureCmd',varargin{:})
     figure(next_fig);
   end
   
+  addEllipse = varargAssign('addEllipse',false,varargin{:});
+  
   plotData = ~varargCheck('AccOnly',varargin{:});
   accessorize = ~varargCheck('DataOnly',varargin{:});
 
   if plotData
       [tPos,fPos] = calculate_single_acc(Rg,Cens);
-      if varargCheck('xplot',varargin{:})
-        scatter(mean(fPos),mean(tPos),'x','MarkerEdgeColor',last_color);
-      else
-        scatter(mean(fPos),mean(tPos),'o','MarkerFaceColor',next_color);
+      plotargs = varargAssign('plotargs',{'o'},varargin{:});
+      tps = mean(tPos);
+      fps = mean(fPos);
+      if addEllipse
+          ellipseArgs = varargAssign('ellipseArgs',{'NoLine'},varargin{:});
+          filled_ellipse(std(fps),std(tps),0,mean(fps),mean(tps),ellipseArgs{:});
       end
+      plot(fps,tps,plotargs{:});
   end
   
   if accessorize

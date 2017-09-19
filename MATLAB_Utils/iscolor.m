@@ -1,0 +1,9 @@
+function logical_out = iscolor( color )
+% source:
+% https://www.mathworks.com/matlabcentral/answers/142087-how-do-i-check-if-a-value-is-a-correct-color
+color = lower(color);
+logical_out=(isnumeric(color) && (sum(size(color)==[1 3])==2 || ...
+  sum(size(color)==[3 1])==2) && sum((color<=[1 1 1] & ...
+  color>=[0 0 0]))==3) || sum(strcmpi({'y','m','c','r','g','b','w','k',...
+  'yellow','magenta','cyan','red','green','blue','white','black'},color))>0;
+end
