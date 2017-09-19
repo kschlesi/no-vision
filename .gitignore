@@ -1,0 +1,11 @@
+*.DS_Store
+*.mat
+Figures/sshots/*.png
+Figures/sshots/*.jpg
+Figures/sshots/*.fig
+Figures/sshots/*.pdf
+Figures/sshots/*.eps
+Figures/sshots/*.svg
+Figures/*
+Figures/*.png
+Figures/*.jpg
